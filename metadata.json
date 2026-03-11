@@ -1,0 +1,5 @@
+{
+  "name": "备份工具",
+  "description": "美观的 iOS 风格增量备份工具，支持多方案管理与 AI 图标生成。",
+  "requestFramePermissions": []
+}

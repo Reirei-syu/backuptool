@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f0f9ff" />
+    <title>GlassBackup | 备份工具</title>
+    <!-- Embedded SVG Favicon (Green Folder with Arrow) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2-2z'/%3E%3Cpath d='M12 9v6'/%3E%3Cpath d='M9 12l3 3 3-3'/%3E%3C/svg%3E" />
+    
+    <!-- Tailwind via CDN is fine for quick setup, though local installation is preferred for production -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'PingFang SC', 'sans-serif'],
+            },
+            colors: {
+              glass: {
+                100: 'rgba(255, 255, 255, 0.4)',
+                200: 'rgba(255, 255, 255, 0.6)',
+                300: 'rgba(255, 255, 255, 0.8)',
+                border: 'rgba(255, 255, 255, 0.5)',
+                text: '#1e293b',
+                textMuted: '#64748b',
+                ios: '#007AFF',
+              }
+            },
+            backdropBlur: {
+              xs: '2px',
+            }
+          },
+        },
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+        background-attachment: fixed;
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden;
+      }
+      
+      /* Offline Cute Snake Decorations (Inline SVGs) */
+      .snake-decor-bottom {
+        position: fixed;
+        bottom: -30px;
+        right: -30px;
+        width: 320px;
+        height: 320px;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: -1;
+        background-repeat: no-repeat;
+        /* Green snake peeking */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M40 160 Q 10 160 10 130 Q 10 100 40 100 Q 70 100 70 70 Q 70 40 100 40 L 140 40' stroke='%2334d399' stroke-width='25' fill='none' stroke-linecap='round' /%3E%3Cellipse cx='140' cy='40' rx='18' ry='14' fill='%2334d399' /%3E%3Ccircle cx='146' cy='36' r='3' fill='white' /%3E%3Ccircle cx='147' cy='36' r='1.5' fill='black' /%3E%3Cpath d='M155 40 L 165 35 M 155 40 L 165 45' stroke='%23fca5a5' stroke-width='3' /%3E%3C/svg%3E");
+        background-size: contain;
+        transform: rotate(-10deg);
+      }
+
+      .snake-decor-top {
+        position: fixed;
+        top: -40px;
+        left: -40px;
+        width: 280px;
+        height: 280px;
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: -1;
+        background-repeat: no-repeat;
+        /* Teal snake hanging */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M50 0 L 50 60 Q 50 100 80 100 Q 110 100 110 70 Q 110 50 80 50' stroke='%232dd4bf' stroke-width='20' fill='none' stroke-linecap='round' /%3E%3Cellipse cx='80' cy='120' rx='15' ry='12' fill='%232dd4bf' opacity='0' /%3E%3Cellipse cx='50' cy='0' rx='10' ry='10' fill='%232dd4bf' /%3E%3C/svg%3E");
+        background-size: contain;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(16, 185, 129, 0.2);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(16, 185, 129, 0.4);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite-plugin-singlefile": "https://esm.sh/vite-plugin-singlefile@^2.3.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div class="snake-decor-bottom"></div>
+    <div class="snake-decor-top"></div>
+    <div id="root"></div>
+    <!-- Vite Entry Point -->
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
