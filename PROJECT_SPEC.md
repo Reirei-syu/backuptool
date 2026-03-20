@@ -2,180 +2,153 @@
 
 ## 1. 项目目标
 
-GlassBackup 是一个浏览器端的轻量备份工具，面向个人文件夹同步场景，提供以下核心能力：
+GlassBackup 是一个浏览器端文件夹备份工具，面向个人场景提供：
 
-- 管理多个备份方案
-- 为每个方案配置多个源目录和一个目标目录
-- 支持“增量备份”与“镜像备份”两种执行模式
-- 展示会话统计与可追踪运行日志
-- 在不支持 File System Access API 的浏览器中提供模拟回退路径
+- 多方案管理
+- 多源目录到单目标目录的同步
+- 增量备份与镜像备份两种模式
+- 会话统计与运行日志
+- 不支持 File System Access API 时的回退体验
 
-## 2. 功能范围
+## 2. 当前分层结构
 
-### 2.1 备份方案管理
+本次重整后，项目按以下职责分层：
 
-- 新增、删除、编辑备份方案
-- 多选方案后批量执行
-- 每个方案独立维护：
-  - 方案名称
-  - 源目录列表
-  - 目标目录
+### `/config`
+
+- [backupDefaults.ts](/D:/coding/backuptool/config/backupDefaults.ts)
+- 负责默认数据、默认文案、路径标签规则
+
+### `/core`
+
+- [backupTargets.ts](/D:/coding/backuptool/core/backupTargets.ts)
+- [schemeState.ts](/D:/coding/backuptool/core/schemeState.ts)
+- 负责纯逻辑计算，不接触浏览器 API、IndexedDB 或 React
+
+### `/service`
+
+- [backupService.ts](/D:/coding/backuptool/service/backupService.ts)
+- [backupExecutionService.ts](/D:/coding/backuptool/service/backupExecutionService.ts)
+- [fileSystemAccessService.ts](/D:/coding/backuptool/service/fileSystemAccessService.ts)
+- [schemeStorageService.ts](/D:/coding/backuptool/service/schemeStorageService.ts)
+- 负责文件系统适配、备份编排、持久化和运行时副作用
+
+### `/ui`
+
+- [useBackupWorkspace.ts](/D:/coding/backuptool/ui/hooks/useBackupWorkspace.ts)
+- [BackupWorkspaceScreen.tsx](/D:/coding/backuptool/ui/components/BackupWorkspaceScreen.tsx)
+- [SchemeSidebar.tsx](/D:/coding/backuptool/ui/components/SchemeSidebar.tsx)
+- [SchemeEditor.tsx](/D:/coding/backuptool/ui/components/SchemeEditor.tsx)
+- [SessionSummary.tsx](/D:/coding/backuptool/ui/components/SessionSummary.tsx)
+- [AlertModal.tsx](/D:/coding/backuptool/ui/components/AlertModal.tsx)
+- [BackupLogModal.tsx](/D:/coding/backuptool/ui/components/BackupLogModal.tsx)
+- 负责渲染与交互绑定，不直接访问 IndexedDB 或底层文件系统逻辑
+
+## 3. 兼容层说明
+
+为避免一次性大改，本次保留了两个兼容目录：
+
+- [services/backupService.ts](/D:/coding/backuptool/services/backupService.ts)
+- [services/backupExecutionService.ts](/D:/coding/backuptool/services/backupExecutionService.ts)
+- [utils/compatibility.ts](/D:/coding/backuptool/utils/compatibility.ts)
+- [utils/storage.ts](/D:/coding/backuptool/utils/storage.ts)
+
+这些文件现在只做 re-export，用于兼容旧导入路径。  
+后续可以在确认没有遗留引用后删除。
+
+## 4. 核心业务规则
+
+### 4.1 方案执行
+
+- 每个方案包含：
+  - 名称
+  - 多个源目录
+  - 一个目标目录
   - 备份模式
   - 最后成功执行时间
 
-### 2.2 备份模式
+### 4.2 同名源目录规则
 
-- `INCREMENTAL`
-  - 仅复制新增或已变更文件
-  - 目标目录中的多余文件保留
-- `MIRROR`
-  - 复制新增或已变更文件
-  - 删除目标目录中源目录不存在的冗余内容
+同一方案中若存在多个同名源目录，执行时必须映射到不同目标子目录：
 
-### 2.3 兼容策略
+- `photos`
+- `photos (2)`
+- `photos (3)`
 
-- 支持 `showDirectoryPicker` 时：
-  - 直接请求浏览器文件系统授权
-  - 源目录使用只读权限
-  - 目标目录使用读写权限
-- 不支持 `showDirectoryPicker` 时：
-  - 使用 `input[webkitdirectory]` 读取目录快照
-  - 通过 `MockDirectoryHandle` / `MockFileHandle` 模拟目录结构
-  - 该模式仅用于流程演示与兼容回退，不代表真实磁盘写入
+目的：避免镜像模式下不同源目录互相覆盖或误删。
 
-## 3. 当前模块结构
+### 4.3 权限规则
 
-> 当前仓库是渐进式整理状态，尚未完全迁移到理想的 `/ui` 目录结构。
+- 任一源目录读权限失败：整套方案跳过
+- 目标目录读写权限失败：整套方案跳过
+- 被跳过或失败的方案不得更新 `lastRun`
+- 只要有失败或跳过项，最终状态不得显示为纯成功
 
-- [App.tsx](/D:/coding/backuptool/App.tsx)
-  - 页面入口
-  - 负责 UI 状态、交互绑定、日志弹窗、方案选择
-  - 只调用 service / utils，不直接执行文件同步
-- [components/GlassCard.tsx](/D:/coding/backuptool/components/GlassCard.tsx)
-  - 通用玻璃态卡片 UI
-- [core/backupTargets.ts](/D:/coding/backuptool/core/backupTargets.ts)
-  - 纯逻辑层
-  - 负责为同名源目录生成稳定且唯一的目标子目录名
-- [services/backupExecutionService.ts](/D:/coding/backuptool/services/backupExecutionService.ts)
-  - 业务编排层
-  - 负责批量执行方案、权限校验、状态汇总、成功回写
-- [services/backupService.ts](/D:/coding/backuptool/services/backupService.ts)
-  - 文件系统同步服务
-  - 负责目录递归、文件比较、镜像清理、冲突恢复
-- [utils/compatibility.ts](/D:/coding/backuptool/utils/compatibility.ts)
-  - 浏览器兼容与 mock 文件系统实现
-- [utils/storage.ts](/D:/coding/backuptool/utils/storage.ts)
-  - IndexedDB 持久化
+### 4.4 类型冲突恢复
 
-## 4. 核心执行规则
-
-### 4.1 同名源目录规则
-
-同一方案下如果存在多个同名源目录，执行时必须映射到不同目标子目录。
-
-示例：
-
-- 第一个 `photos` -> `photos`
-- 第二个 `photos` -> `photos (2)`
-- 第三个 `photos` -> `photos (3)`
-
-这样可以避免镜像模式下多个同名源目录互相覆盖和误删。
-
-### 4.2 权限校验规则
-
-方案开始执行前必须完成权限检查：
-
-- 任一源目录无权限：整套方案跳过
-- 目标目录无权限：整套方案跳过
-- 被跳过的方案不得更新 `lastRun`
-- 有失败或跳过项时，最终状态不得标记为纯成功
-
-### 4.3 类型冲突恢复规则
-
-当目标端同一路径出现“文件/目录类型不一致”时：
+目标端若出现同一路径“文件/目录类型不一致”：
 
 - 源是目录、目标是文件：删除目标文件并重建目录
 - 源是文件、目标是目录：删除目标目录并重建文件
 
-该恢复必须继续当前方案，而不是直接中断整套备份。
+恢复后继续当前方案，而不是直接中断整个任务。
 
-### 4.4 成功判定规则
+## 5. 浏览器兼容策略
 
-只有在以下条件同时满足时，方案才算成功：
+### 5.1 支持 File System Access API
 
-- 权限校验通过
-- 同步过程未产生 error
-- 文件系统处理未中断
+- 使用 `showDirectoryPicker`
+- 源目录请求 `read`
+- 目标目录请求 `readwrite`
 
-只有成功方案才会写回 `lastRun`。
+### 5.2 不支持 File System Access API
 
-## 5. 数据模型
+- 使用 `input[webkitdirectory]`
+- 用 mock 目录句柄模拟树结构
+- 该模式用于流程回退和演示，不代表真实磁盘写入
 
-### 5.1 `BackupScheme`
+## 6. 本次架构重整内容
 
-- `id: string`
-- `name: string`
-- `sources: FolderItem[]`
-- `destination: FolderItem | null`
-- `mode: BackupMode`
-- `lastRun: Date | null`
+### 6.1 已完成
 
-### 5.2 `FolderItem`
+- 将页面状态编排从 [App.tsx](/D:/coding/backuptool/App.tsx) 抽离到 hook
+- 将页面拆成侧栏、编辑区、统计区、告警弹窗、日志弹窗
+- 将默认值和命名规则移入 `config`
+- 将方案增删改查纯逻辑移入 `core`
+- 将文件系统访问与 IndexedDB 持久化移入 `service`
+- 为新层补充自动化测试
 
-- `id: string`
-- `name: string`
-- `handle: FileSystemDirectoryHandle`
-- `pathLabel: string`
+### 6.2 当前收益
 
-### 5.3 `BackupExecutionResult`
-
-- `stats: BackupStats`
-- `completed: boolean`
-- `hadErrors: boolean`
-
-## 6. 本次修复内容
-
-### 6.1 已修复
-
-- 修复同名源目录在镜像模式下互相覆盖的问题
-- 修复文件/目录类型冲突导致整套方案中断的问题
-- 修复权限拒绝后仍继续执行且误更新 `lastRun` 的问题
-- 修复最终状态无条件显示完成的问题
-- 修复非 File System Access API 环境下无法设置目标目录的问题
-- 补充 IndexedDB 读取失败时的默认回退，避免页面卡在加载态
-- 补充 Vitest 自动化测试与计划文档
-
-### 6.2 影响范围
-
-- 方案执行状态流
-- 目标目录映射逻辑
-- 文件系统冲突恢复逻辑
-- 浏览器兼容回退路径
-- 项目验证流程
+- `App.tsx` 变为薄入口
+- UI 不再直接依赖 IndexedDB 与权限 API
+- 纯逻辑模块可单测
+- 服务边界更清晰，后续扩展 dry-run、差异预览或桌面版适配更容易
 
 ## 7. 验证基线
 
-当前必须通过以下验证：
+必须通过：
 
 - `npm test`
 - `npm run build`
 
-当前验证结果：
+当前结果：
 
 - 单元测试：通过
 - 生产构建：通过
 
 ## 8. 已知风险与后续建议
 
-### 8.1 当前风险
+### 8.1 已知风险
 
-- 非兼容浏览器中的回退模式属于 mock，同步结果不会真实写入磁盘
-- 项目目录尚未完全收敛到 `/config /core /service /ui` 的理想分层
-- `index.html` 仍依赖 `cdn.tailwindcss.com`，适合原型或单文件分发，不适合长期生产化
-- `vite` 仍存在 dev-only 的 `esbuild` 审计提示，若要彻底消除需要评估大版本升级
+- 非兼容浏览器回退模式仍是 mock，不会真实写盘
+- 兼容 shim 目录仍存在，需要后续清理
+- [components/GlassCard.tsx](/D:/coding/backuptool/components/GlassCard.tsx) 仍在旧目录，尚未完全并入 `/ui`
+- `index.html` 仍依赖 Tailwind CDN，适合当前分发方式，但不适合长期生产化
 
-### 8.2 建议
+### 8.2 后续建议
 
-- 下一步将页面组件迁入 `ui/`，逐步消除根目录中的 UI 入口耦合
-- 为 `storage.ts` 增加独立测试，覆盖 IndexedDB 异常路径
-- 视交付目标决定是否将 Tailwind CDN 改为本地构建
+- 清理旧 `services/` 与 `utils/` shim
+- 继续把公共 UI 组件迁入 `/ui/components`
+- 为 `schemeStorageService` 增加独立测试
+- 评估把 Tailwind CDN 改为本地构建
