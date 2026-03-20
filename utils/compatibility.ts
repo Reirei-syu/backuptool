@@ -1,10 +1,5 @@
+export const isFileSystemApiSupported = () => 'showDirectoryPicker' in window;
 
-// Check if the API is supported
-export const isFileSystemApiSupported = () => {
-  return 'showDirectoryPicker' in window;
-};
-
-// Mock classes to simulate File System Access API structure
 export class MockFileSystemHandle {
   kind: 'file' | 'directory';
   name: string;
@@ -32,9 +27,29 @@ export class MockFileHandle extends MockFileSystemHandle {
   }
 
   async createWritable() {
+    let nextValue: unknown = this.file;
+
     return {
-      write: async (_data: any) => { /* Mock write */ },
-      close: async () => { /* Mock close */ },
+      write: async (data: unknown) => {
+        nextValue = data;
+      },
+      close: async () => {
+        if (nextValue instanceof File) {
+          this.file = nextValue;
+          return;
+        }
+
+        if (nextValue instanceof Blob) {
+          this.file = new File([await nextValue.arrayBuffer()], this.name, {
+            type: nextValue.type,
+            lastModified: Date.now(),
+          });
+          return;
+        }
+
+        const parts = Array.isArray(nextValue) ? nextValue : [nextValue];
+        this.file = new File(parts as BlobPart[], this.name, { lastModified: Date.now() });
+      },
     };
   }
 }
@@ -50,30 +65,36 @@ export class MockDirectoryHandle extends MockFileSystemHandle {
   async getDirectoryHandle(name: string, options?: { create?: boolean }) {
     if (this.children.has(name)) {
       const handle = this.children.get(name);
-      if (handle?.kind === 'directory') return handle as MockDirectoryHandle;
+      if (handle?.kind === 'directory') {
+        return handle as MockDirectoryHandle;
+      }
       throw new Error('Type mismatch');
     }
+
     if (options?.create) {
-      const newDir = new MockDirectoryHandle(name);
-      this.children.set(name, newDir);
-      return newDir;
+      const newDirectory = new MockDirectoryHandle(name);
+      this.children.set(name, newDirectory);
+      return newDirectory;
     }
+
     throw new Error('NotFound');
   }
 
   async getFileHandle(name: string, options?: { create?: boolean }) {
     if (this.children.has(name)) {
       const handle = this.children.get(name);
-      if (handle?.kind === 'file') return handle as MockFileHandle;
+      if (handle?.kind === 'file') {
+        return handle as MockFileHandle;
+      }
       throw new Error('Type mismatch');
     }
+
     if (options?.create) {
-      // Create a dummy file for simulation writing
-      const dummyFile = new File([""], name); 
-      const newFile = new MockFileHandle(dummyFile);
+      const newFile = new MockFileHandle(new File([''], name, { lastModified: Date.now() }));
       this.children.set(name, newFile);
       return newFile;
     }
+
     throw new Error('NotFound');
   }
 
@@ -82,6 +103,7 @@ export class MockDirectoryHandle extends MockFileSystemHandle {
       this.children.delete(name);
       return;
     }
+
     throw new Error('NotFound');
   }
 
@@ -92,29 +114,28 @@ export class MockDirectoryHandle extends MockFileSystemHandle {
   }
 }
 
-// Helper to convert FileList (from input) to MockDirectoryHandle tree
 export const convertFileListToHandle = (files: FileList): MockDirectoryHandle => {
-  if (files.length === 0) return new MockDirectoryHandle('root');
+  if (files.length === 0) {
+    return new MockDirectoryHandle('selected-folder');
+  }
 
-  // Use the name of the first folder in the path as the root, or 'Root'
-  const rootName = files[0].webkitRelativePath.split('/')[0] || 'Selected Folder';
+  const rootName = files[0].webkitRelativePath.split('/')[0] || 'selected-folder';
   const rootHandle = new MockDirectoryHandle(rootName);
 
-  Array.from(files).forEach(file => {
+  Array.from(files).forEach((file) => {
     const parts = file.webkitRelativePath.split('/');
-    // parts[0] is the root folder name, we start from parts[1]
-    let currentDir = rootHandle;
+    let currentDirectory = rootHandle;
 
-    for (let i = 1; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (!currentDir.children.has(part)) {
-        currentDir.children.set(part, new MockDirectoryHandle(part));
+    for (let index = 1; index < parts.length - 1; index += 1) {
+      const segment = parts[index];
+      if (!currentDirectory.children.has(segment)) {
+        currentDirectory.children.set(segment, new MockDirectoryHandle(segment));
       }
-      currentDir = currentDir.children.get(part) as MockDirectoryHandle;
+      currentDirectory = currentDirectory.children.get(segment) as MockDirectoryHandle;
     }
 
     const fileName = parts[parts.length - 1];
-    currentDir.children.set(fileName, new MockFileHandle(file));
+    currentDirectory.children.set(fileName, new MockFileHandle(file));
   });
 
   return rootHandle;
