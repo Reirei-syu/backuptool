@@ -25,8 +25,8 @@ export const SchemeSidebar = ({
 }: SchemeSidebarProps) => {
   return (
     <div className="lg:col-span-3 flex flex-col gap-5">
-      <div className="flex items-center gap-3 px-4 py-3 bg-white/40 rounded-2xl border border-white/60 backdrop-blur-md shadow-sm">
-        <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-100">
+      <div className="flex items-center gap-3 px-4 py-3 bg-white/60 rounded-2xl border border-sky-100/80 backdrop-blur-md shadow-sm">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-100">
           <Layers className="w-5 h-5" />
         </div>
         <h1 className="text-lg font-black text-slate-800 tracking-tight">备份方案库</h1>
@@ -34,10 +34,10 @@ export const SchemeSidebar = ({
 
       <GlassCard
         title="全部方案"
-        icon={<Settings2 className="w-4 h-4 text-emerald-600" />}
+        icon={<Settings2 className="w-4 h-4 text-sky-600" />}
         className="flex-1 overflow-hidden"
         actions={
-          <button onClick={onAddScheme} className="text-emerald-600 hover:scale-110 transition-transform">
+          <button onClick={onAddScheme} className="text-sky-600 hover:scale-110 transition-transform">
             <PlusCircle className="w-5 h-5" />
           </button>
         }
@@ -49,8 +49,8 @@ export const SchemeSidebar = ({
               onClick={() => onSelectScheme(scheme.id)}
               className={`group relative flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border ${
                 activeSchemeId === scheme.id
-                  ? 'bg-white border-emerald-200 shadow-md translate-x-1'
-                  : 'bg-white/30 border-transparent hover:bg-white/50'
+                  ? 'bg-white border-sky-200 shadow-md translate-x-1'
+                  : 'bg-white/45 border-transparent hover:bg-white/70'
               }`}
             >
               <div
@@ -60,8 +60,8 @@ export const SchemeSidebar = ({
                 }}
                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                   selectedSchemeIds.has(scheme.id)
-                    ? 'bg-emerald-500 border-emerald-500 text-white'
-                    : 'border-slate-300'
+                    ? 'bg-sky-500 border-sky-500 text-white'
+                    : 'border-slate-300 bg-white/70'
                 }`}
               >
                 {selectedSchemeIds.has(scheme.id) && <Check className="w-3 h-3 stroke-[4px]" />}
@@ -70,7 +70,7 @@ export const SchemeSidebar = ({
               <div className="flex-1 overflow-hidden">
                 <div
                   className={`text-sm font-bold truncate ${
-                    activeSchemeId === scheme.id ? 'text-emerald-700' : 'text-slate-600'
+                    activeSchemeId === scheme.id ? 'text-sky-800' : 'text-slate-600'
                   }`}
                 >
                   {scheme.name}
@@ -87,7 +87,7 @@ export const SchemeSidebar = ({
                     onDeleteScheme(scheme.id);
                   }}
                   disabled={isBusy}
-                  className="p-1 text-slate-300 hover:text-rose-500 transition-colors disabled:opacity-40"
+                  className="p-1 text-slate-300 hover:text-sky-600 transition-colors disabled:opacity-40"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
