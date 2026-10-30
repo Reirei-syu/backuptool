@@ -2,10 +2,24 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { viteSingleFile } from "vite-plugin-singlefile";
+import { readFileSync } from 'node:fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    {
+      name: 'inline-tool-favicons',
+      transformIndexHtml: {
+        order: 'pre',
+        handler(html) {
+          return html.replace(/\.\/favicon\.(svg|ico)(?:\?[^"\s]*)?/g, (_url, extension) => {
+            const mime = extension === 'svg' ? 'image/svg+xml' : 'image/x-icon';
+            const data = readFileSync(new URL(`./favicon.${extension}`, import.meta.url)).toString('base64');
+            return `data:${mime};base64,${data}`;
+          });
+        },
+      },
+    },
     react(), 
     viteSingleFile() // 启用单文件打包插件
   ],
