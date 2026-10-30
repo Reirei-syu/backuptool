@@ -45,10 +45,12 @@ export const BackupWorkspaceScreen = ({
         }
       `}</style>
 
+      <nav className="tool-nav"><a href="https://taxcalculatetools.com/">← 返回导航页</a></nav>
+
       <AlertModal alertInfo={alertInfo} onClose={closeAlert} />
       <BackupLogModal logs={logs} show={showLogs} onClose={() => setShowLogs(false)} />
 
-      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto mx-auto">
+      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 mx-auto">
         <SchemeSidebar
           activeSchemeId={activeSchemeId}
           isBusy={isBusy}

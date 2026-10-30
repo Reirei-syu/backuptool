@@ -82,7 +82,7 @@ export const SchemeEditor = ({
         multiple
       />
 
-      <div className="bg-white/80 backdrop-blur-xl p-2 rounded-2xl border border-sky-100 shadow-lg flex gap-1">
+      <div className="glass-panel p-2 flex gap-1">
         <button
           onClick={() => updateScheme({ mode: BackupMode.INCREMENTAL })}
           className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
@@ -105,7 +105,7 @@ export const SchemeEditor = ({
         </button>
       </div>
 
-      <div className="flex items-center gap-3 bg-white/80 p-4 rounded-3xl border border-sky-100 shadow-md">
+      <div className="flex items-center gap-3 glass-panel p-4">
         <input
           type="text"
           value={activeScheme.name}
@@ -145,7 +145,7 @@ export const SchemeEditor = ({
                     sources: activeScheme.sources.filter((source) => source.id !== folder.id),
                   })
                 }
-                className="text-slate-300 hover:text-sky-600"
+                className="text-slate-500 hover:text-sky-600"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -154,7 +154,7 @@ export const SchemeEditor = ({
 
           {activeScheme.sources.length === 0 && (
             <div className="flex flex-col items-center justify-center h-32 border border-dashed rounded-xl gap-2 px-6 text-center">
-              <span className="text-slate-300 text-xs">点击右上角按钮添加源文件夹</span>
+              <span className="text-slate-500 text-xs">点击右上角按钮添加源文件夹</span>
               <div className="flex gap-1.5 items-start text-[10px] text-sky-700 bg-sky-50 px-2 py-1 rounded border border-sky-100">
                 <Info className="w-3 h-3 shrink-0 mt-0.5" />
                 <span>浏览器限制下无法直接选择桌面或磁盘根目录，请优先选择子文件夹。</span>
@@ -186,14 +186,14 @@ export const SchemeEditor = ({
               </div>
             </div>
           ) : (
-            <div className="h-24 flex items-center justify-center text-slate-300 text-xs border border-dashed rounded-xl">
+            <div className="h-24 flex items-center justify-center text-slate-500 text-xs border border-dashed rounded-xl">
               尚未设置目标路径
             </div>
           )}
         </div>
       </GlassCard>
 
-      <div className="bg-white p-6 rounded-[2rem] border border-sky-100 shadow-2xl shadow-sky-100/40">
+      <div className="glass-panel p-6">
         {isBusy ? (
           <div className="w-full h-16 rounded-[1.2rem] bg-slate-900/5 p-1.5 relative overflow-hidden transition-all duration-500">
             <div className="relative w-full h-full rounded-[1rem] overflow-hidden bg-slate-100 shadow-inner">
@@ -204,7 +204,7 @@ export const SchemeEditor = ({
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
-              <div className="absolute inset-0 flex items-center justify-center gap-3 text-white font-black text-lg drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
+              <div className="absolute inset-0 flex items-center justify-center gap-3 text-white font-semibold text-lg drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
                 <Loader2 className="animate-spin w-5 h-5 text-white" />
                 <span className="tracking-wide">
                   正在处理... {stats.processedFiles > 0 ? `${stats.processedFiles} / ${stats.totalFiles}` : '准备中'}
@@ -219,7 +219,7 @@ export const SchemeEditor = ({
               onClick={() => {
                 void startMultiBackup();
               }}
-              className="w-full py-5 rounded-[1.5rem] bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-black text-lg shadow-xl shadow-sky-200 transition-all disabled:opacity-40 active:scale-95 flex items-center justify-center gap-3 hover:shadow-sky-200/50 hover:-translate-y-0.5"
+              className="w-full py-5 rounded-[1.5rem] glass-primary text-white font-semibold text-lg shadow-xl shadow-sky-200 transition-all disabled:opacity-40 active:scale-95 flex items-center justify-center gap-3 hover:shadow-sky-200/50 hover:-translate-y-0.5"
             >
               <Play className="fill-current w-6 h-6" />
               执行勾选的 {selectedCount} 个任务

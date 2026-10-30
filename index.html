@@ -17,17 +17,18 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'system-ui', 'PingFang SC', 'sans-serif'],
+              sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Microsoft YaHei', 'sans-serif'],
             },
             colors: {
+              sky: {50:'#f0f2fb',100:'#e1e6f8',200:'#c8d1ef',300:'#acb9e7',400:'#899bd9',500:'#687bd1',600:'#596cc4',700:'#4e5da4',800:'#3f4c83',900:'#343f6d',950:'#25314b'},
               glass: {
-                100: 'rgba(255, 255, 255, 0.62)',
+                100: 'rgba(255, 255, 255, 0.5)',
                 200: 'rgba(255, 255, 255, 0.78)',
                 300: 'rgba(255, 255, 255, 0.9)',
-                border: 'rgba(191, 219, 254, 0.7)',
-                text: '#1e3a5f',
+                border: 'rgba(255, 255, 255, 0.74)',
+                text: '#25314b',
                 textMuted: '#64748b',
-                ios: '#2563eb',
+                ios: '#596cc4',
               }
             },
             backdropBlur: {
@@ -37,67 +38,19 @@
         },
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      body {
-        margin: 0;
-        font-family: 'Inter', sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(125, 211, 252, 0.22), transparent 28%),
-          radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.18), transparent 24%),
-          linear-gradient(145deg, #f8fbff 0%, #eef4ff 48%, #f3f7ff 100%);
-        background-attachment: fixed;
-        overflow-y: auto;
-        overflow-x: hidden;
-        color: #1e3a5f;
-      }
-
-      .snake-decor-bottom {
-        position: fixed;
-        bottom: -30px;
-        right: -30px;
-        width: 320px;
-        height: 320px;
-        opacity: 0.14;
-        pointer-events: none;
-        z-index: -1;
-        background-repeat: no-repeat;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M40 160 Q 10 160 10 130 Q 10 100 40 100 Q 70 100 70 70 Q 70 40 100 40 L 140 40' stroke='%2360a5fa' stroke-width='25' fill='none' stroke-linecap='round' /%3E%3Cellipse cx='140' cy='40' rx='18' ry='14' fill='%2360a5fa' /%3E%3Ccircle cx='146' cy='36' r='3' fill='white' /%3E%3Ccircle cx='147' cy='36' r='1.5' fill='black' /%3E%3Cpath d='M155 40 L 165 35 M 155 40 L 165 45' stroke='%2393c5fd' stroke-width='3' /%3E%3C/svg%3E");
-        background-size: contain;
-        transform: rotate(-10deg);
-      }
-
-      .snake-decor-top {
-        position: fixed;
-        top: -40px;
-        left: -40px;
-        width: 280px;
-        height: 280px;
-        opacity: 0.11;
-        pointer-events: none;
-        z-index: -1;
-        background-repeat: no-repeat;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M50 0 L 50 60 Q 50 100 80 100 Q 110 100 110 70 Q 110 50 80 50' stroke='%23818cf8' stroke-width='20' fill='none' stroke-linecap='round' /%3E%3Cellipse cx='80' cy='120' rx='15' ry='12' fill='%23818cf8' opacity='0' /%3E%3Cellipse cx='50' cy='0' rx='10' ry='10' fill='%23818cf8' /%3E%3C/svg%3E");
-        background-size: contain;
-      }
-
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.18);
-        border-radius: 10px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(59, 130, 246, 0.32);
-      }
+      :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#25314b;background:#edf1f8;font-synthesis:none}
+      *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 16% 12%,#c9d7ffb3,transparent 46%),radial-gradient(ellipse at 48% 36%,#e4cfff80,transparent 48%),radial-gradient(ellipse at 82% 8%,#c9eee88c,transparent 42%),linear-gradient(145deg,#f5f7fc,#eaf0f8);background-attachment:fixed;color:#25314b}
+      .glass-panel{background:linear-gradient(135deg,#ffffff9c,#ffffff3d);border:1px solid #ffffffbd;border-radius:26px;box-shadow:inset 0 1px 0 #ffffffe6,inset 0 -1px 0 #ffffff4d,0 8px 32px #52678e12,0 2px 6px #52678e08;backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);}
+      .glass-modal{background:linear-gradient(135deg,#ffffff9c,#ffffff3d);border:1px solid #ffffffbd;border-radius:26px;box-shadow:inset 0 1px 0 #ffffffe6,inset 0 -1px 0 #ffffff4d,0 8px 32px #52678e12,0 2px 6px #52678e08;backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);background:linear-gradient(135deg,#fffffff0,#f4f6fce8)}
+      .glass-inset{background:#ffffff59;border:1px solid #ffffffa6;border-radius:16px}
+      .glass-primary{background:linear-gradient(135deg,#687bd1,#596cc4);box-shadow:inset 0 1px 0 #ffffff55,0 5px 16px #596cc426}
+      .glass-header{background:#ffffff30;border-bottom:1px solid #ffffff80}
+      .tool-nav{max-width:1280px;width:100%;margin:0 auto 24px}.tool-nav a{display:inline-flex;padding:10px 16px;border-radius:16px;border:1px solid #ffffffbd;background:#ffffff70;color:#596cc4;font-size:14px;text-decoration:none;box-shadow:inset 0 1px 0 #fff,0 4px 14px #52678e0c;backdrop-filter:blur(24px)}.tool-nav a:hover{background:#ffffffb3}
+      button,input,select{font:inherit}button:focus-visible,a:focus-visible{outline:3px solid #687bd1;outline-offset:3px}
+      input:focus-visible{outline:2px solid #687bd1;outline-offset:3px}
+      ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#7388bd40;border-radius:10px}
+      @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
     </style>
     <script type="importmap">
 {
@@ -115,8 +68,6 @@
     </script>
   </head>
   <body>
-    <div class="snake-decor-bottom"></div>
-    <div class="snake-decor-top"></div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

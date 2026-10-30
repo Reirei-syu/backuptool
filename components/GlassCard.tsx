@@ -17,12 +17,11 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 }) => {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-glass-border bg-glass-100 shadow-[0_14px_40px_rgba(37,99,235,0.12)] backdrop-blur-xl transition-all duration-300 hover:bg-glass-200 ${className}`}
+      className={`glass-panel relative overflow-hidden ${className}`}
     >
-      <div className="pointer-events-none absolute -inset-full top-0 block -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-sky-100 opacity-25 blur-lg" />
 
       {(title || icon) && (
-        <div className="flex items-center justify-between border-b border-glass-border/80 p-4 bg-white/35">
+        <div className="flex items-center justify-between glass-header p-4">
           <div className="flex items-center gap-3">
             {icon && <div className="text-glass-text">{icon}</div>}
             {title && <h3 className="text-lg font-medium text-glass-text">{title}</h3>}

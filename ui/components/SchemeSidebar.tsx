@@ -25,11 +25,11 @@ export const SchemeSidebar = ({
 }: SchemeSidebarProps) => {
   return (
     <div className="lg:col-span-3 flex flex-col gap-5">
-      <div className="flex items-center gap-3 px-4 py-3 bg-white/60 rounded-2xl border border-sky-100/80 backdrop-blur-md shadow-sm">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-100">
+      <div className="flex items-center gap-3 glass-panel px-4 py-4">
+        <div className="w-10 h-10 rounded-xl glass-primary flex items-center justify-center text-white shadow-lg shadow-sky-100">
           <Layers className="w-5 h-5" />
         </div>
-        <h1 className="text-lg font-black text-slate-800 tracking-tight">备份方案库</h1>
+        <h1 className="text-lg font-semibold text-slate-800 tracking-tight">备份方案库</h1>
       </div>
 
       <GlassCard
@@ -49,7 +49,7 @@ export const SchemeSidebar = ({
               onClick={() => onSelectScheme(scheme.id)}
               className={`group relative flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border ${
                 activeSchemeId === scheme.id
-                  ? 'bg-white border-sky-200 shadow-md translate-x-1'
+                  ? 'bg-white/70 border-sky-200 shadow-sm'
                   : 'bg-white/45 border-transparent hover:bg-white/70'
               }`}
             >
@@ -75,7 +75,7 @@ export const SchemeSidebar = ({
                 >
                   {scheme.name}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-0.5 font-medium">
+                <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
                   {scheme.mode === BackupMode.MIRROR ? '镜像模式' : '增量模式'}
                 </div>
               </div>
@@ -87,7 +87,7 @@ export const SchemeSidebar = ({
                     onDeleteScheme(scheme.id);
                   }}
                   disabled={isBusy}
-                  className="p-1 text-slate-300 hover:text-sky-600 transition-colors disabled:opacity-40"
+                  className="p-1 text-slate-500 hover:text-sky-600 transition-colors disabled:opacity-40"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
