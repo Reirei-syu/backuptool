@@ -16,42 +16,42 @@ GlassBackup 是一个浏览器端文件夹备份工具，面向个人场景提�
 
 ### `/config`
 
-- [backupDefaults.ts](/D:/coding/backuptool/config/backupDefaults.ts)
+- [backupDefaults.ts](./config/backupDefaults.ts)
 - 负责默认数据、默认文案、路径标签规则
 
 ### `/core`
 
-- [backupTargets.ts](/D:/coding/backuptool/core/backupTargets.ts)
-- [schemeState.ts](/D:/coding/backuptool/core/schemeState.ts)
+- [backupTargets.ts](./core/backupTargets.ts)
+- [schemeState.ts](./core/schemeState.ts)
 - 负责纯逻辑计算，不接触浏览器 API、IndexedDB 或 React
 
 ### `/service`
 
-- [backupService.ts](/D:/coding/backuptool/service/backupService.ts)
-- [backupExecutionService.ts](/D:/coding/backuptool/service/backupExecutionService.ts)
-- [fileSystemAccessService.ts](/D:/coding/backuptool/service/fileSystemAccessService.ts)
-- [schemeStorageService.ts](/D:/coding/backuptool/service/schemeStorageService.ts)
+- [backupService.ts](./service/backupService.ts)
+- [backupExecutionService.ts](./service/backupExecutionService.ts)
+- [fileSystemAccessService.ts](./service/fileSystemAccessService.ts)
+- [schemeStorageService.ts](./service/schemeStorageService.ts)
 - 负责文件系统适配、备份编排、持久化和运行时副作用
 
 ### `/ui`
 
-- [useBackupWorkspace.ts](/D:/coding/backuptool/ui/hooks/useBackupWorkspace.ts)
-- [BackupWorkspaceScreen.tsx](/D:/coding/backuptool/ui/components/BackupWorkspaceScreen.tsx)
-- [SchemeSidebar.tsx](/D:/coding/backuptool/ui/components/SchemeSidebar.tsx)
-- [SchemeEditor.tsx](/D:/coding/backuptool/ui/components/SchemeEditor.tsx)
-- [SessionSummary.tsx](/D:/coding/backuptool/ui/components/SessionSummary.tsx)
-- [AlertModal.tsx](/D:/coding/backuptool/ui/components/AlertModal.tsx)
-- [BackupLogModal.tsx](/D:/coding/backuptool/ui/components/BackupLogModal.tsx)
+- [useBackupWorkspace.ts](./ui/hooks/useBackupWorkspace.ts)
+- [BackupWorkspaceScreen.tsx](./ui/components/BackupWorkspaceScreen.tsx)
+- [SchemeSidebar.tsx](./ui/components/SchemeSidebar.tsx)
+- [SchemeEditor.tsx](./ui/components/SchemeEditor.tsx)
+- [SessionSummary.tsx](./ui/components/SessionSummary.tsx)
+- [AlertModal.tsx](./ui/components/AlertModal.tsx)
+- [BackupLogModal.tsx](./ui/components/BackupLogModal.tsx)
 - 负责渲染与交互绑定，不直接访问 IndexedDB 或底层文件系统逻辑
 
 ## 3. 兼容层说明
 
 为避免一次性大改，本次保留了两个兼容目录：
 
-- [services/backupService.ts](/D:/coding/backuptool/services/backupService.ts)
-- [services/backupExecutionService.ts](/D:/coding/backuptool/services/backupExecutionService.ts)
-- [utils/compatibility.ts](/D:/coding/backuptool/utils/compatibility.ts)
-- [utils/storage.ts](/D:/coding/backuptool/utils/storage.ts)
+- [services/backupService.ts](./services/backupService.ts)
+- [services/backupExecutionService.ts](./services/backupExecutionService.ts)
+- [utils/compatibility.ts](./utils/compatibility.ts)
+- [utils/storage.ts](./utils/storage.ts)
 
 这些文件现在只做 re-export，用于兼容旧导入路径。  
 后续可以在确认没有遗留引用后删除。
@@ -111,7 +111,7 @@ GlassBackup 是一个浏览器端文件夹备份工具，面向个人场景提�
 
 ### 6.1 已完成
 
-- 将页面状态编排从 [App.tsx](/D:/coding/backuptool/App.tsx) 抽离到 hook
+- 将页面状态编排从 [App.tsx](./App.tsx) 抽离到 hook
 - 将页面拆成侧栏、编辑区、统计区、告警弹窗、日志弹窗
 - 将默认值和命名规则移入 `config`
 - 将方案增删改查纯逻辑移入 `core`
@@ -143,7 +143,7 @@ GlassBackup 是一个浏览器端文件夹备份工具，面向个人场景提�
 
 - 非兼容浏览器回退模式仍是 mock，不会真实写盘
 - 兼容 shim 目录仍存在，需要后续清理
-- [components/GlassCard.tsx](/D:/coding/backuptool/components/GlassCard.tsx) 仍在旧目录，尚未完全并入 `/ui`
+- [components/GlassCard.tsx](./components/GlassCard.tsx) 仍在旧目录，尚未完全并入 `/ui`
 - `index.html` 仍依赖 Tailwind CDN，适合当前分发方式，但不适合长期生产化
 
 ### 8.2 后续建议
